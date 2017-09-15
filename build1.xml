@@ -1,0 +1,84 @@
+<project name="Jenkins test buildfile" default="deploy" basedir="." xmlns:sf="antlib:com.salesforce" xmlns:ac="antlib:net.sf.antcontrib" xmlns:ff="antlib:com.spaceheroes">
+
+	<!-- Force.com Migration tool, ForceFlow
+	     and other useful Ant additions 
+	======================================================= -->
+	<path id="ant.additions.classpath">
+        <fileset dir="./lib/" includes="*.jar"/>
+    </path>
+	<taskdef resource="com/salesforce/antlib.xml" uri="antlib:com.salesforce" classpathref="ant.additions.classpath"/>
+	<taskdef resource="net/sf/antcontrib/antlib.xml" uri="antlib:net.sf.antcontrib" classpathref="ant.additions.classpath"/>
+	<taskdef resource="com/spaceheroes/task/antlib.xml" uri="antlib:com.spaceheroes" classpathref="ant.additions.classpath" />
+	
+	<property environment="env" />
+	<property name="srcPath" value="../src" />
+	<property name="buildfile" value="../build/buildfile.zip" />
+	<property name="sf.maxPoll" value="5000" />	
+	<property name="sf.maxWaitMillis" value="5000" />	
+	<property name="sf.packageContent"
+		value="applications/*.*, assignmentRules/*.*, classes/*.*, customApplicationComponents/*.*, customPermissions/*.*, staticresources/*.*, dashboards/*.*, dashboards/**/*.*, documents/**/*.*, flows/*.*, email/**/*.*, labels/*.*, objects/*.*, layouts/*.*, workflows/*.*, pages/*.*, components/*.*, tabs/*.*, homePageComponents/*.*, homePageLayouts/*.*, letterhead/*.*, queues/*.*, permissionsets/*.*, remoteSiteSettings/*.*, reports/*.*, reports/**/*.*, reportTypes/*.*, sites/*.*, tabs/*.*, triggers/*.*, weblinks/*.*, profiles/*.*, skills/*.*, liveChatAgentConfigs/*.*, liveChatButtons/*.*, liveChatDeployments/*.*, staticresources/*.*, translations/*.*, objectTranslations/*.*, settings/*.*, roles/*.*, matchingRules/*.*, sharingRules/*.*, groups/*.*, quickActions/*.*, package.xml, destructiveChangesPre.xml, destructiveChangesPost.xml" />	
+
+
+	
+	<!-- Properties & variables		  
+	========================================= -->
+	<condition property="sf.username" value="${env.username}" else="">
+	        <isset property="env.username"/>
+	</condition>
+	<condition property="sf.password" value="${env.password}" else="">
+	        <isset property="env.password"/>
+	</condition>
+	<condition property="sf.securityToken" value="${env.securityToken}" else="">
+		<isset property="env.securityToken"/>
+	</condition>
+	<condition property="sf.serverurl" value="${env.serverurl}" else="test.salesforce.com">
+		<isset property="env.serverurl"/>
+	</condition>
+	<condition property="sf.checkonly" value="${env.checkonly}" else="true">
+		<isset property="env.checkonly"/>
+	</condition>
+	<condition property="sf.testLevel" value="${env.testLevel}">
+		<isset property="env.testLevel"/>
+	</condition>
+	
+	
+	
+	<!-- Task definitions below
+	========================================= -->
+
+	
+	
+	<target name="deploy">
+		
+		<!-- 
+		Username and password must be specifed
+		as environment variables, otherwise build 
+		will fail.
+		============================================== -->
+		<fail message="Environment variable not found: username" unless="env.username" />
+		<fail message="Environment variable not found: password" unless="env.password" />
+	
+		<echo>Deploying to Salesforce...</echo>
+		<echo>=======================================================</echo>
+		<echo>Username   : ${sf.username}</echo>
+		<echo>Server URL : ${sf.serverurl}</echo>
+		<echo>Check only : ${sf.checkonly}</echo>
+		<echo>=======================================================</echo>
+		<sf:deploy 
+			username="${sf.username}" 
+			password="${sf.password}${sf.securityToken}"
+			maxPoll="${sf.maxPoll}"
+			serverurl="${sf.serverurl}"
+			pollWaitMillis="${sf.maxWaitMillis}"
+			checkOnly="true"
+			deployRoot="${srcPath}"
+			rollbackOnError="true"
+			ignoreWarnings="true"
+			runAllTests="${sf.testLevel}"
+		
+				
+		/>
+	
+	</target>
+
+</project>
