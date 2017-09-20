@@ -1,0 +1,283 @@
+<apex:page controller="APTS_MailToConfigController" sidebar="false">
+
+<apex:includescript value="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" / >
+<apex:includescript value="//code.jquery.com/jquery-1.12.4.js" / >
+<apex:includescript value="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js" />
+<apex:includeScript Value="//cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js" />        
+<apex:stylesheet value="//cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" />
+<apex:stylesheet value="//cdn.datatables.net/buttons/1.3.1/css/buttons.dataTables.min.css" />
+<apex:stylesheet value="{!URLFOR($Resource.APTS_Angular_Related_Files,'CSS/loader.css')}" />
+<!--
+@ModifiedBy: Dinesh Kumar S
+@ModifiedDate: 10/08/2017
+@Release: R6-EP-CPQ
+@Requirement ID : 1609
+@ChangeDescription: As part of R6-EP-CPQ Requirement #1609, Quotation/Agreement team with 
+the Role as "quote support" will be displayed in a Jquery table and where user clicks on the row and it will be selected similarly email will pushed into the array 
+and when send Email is click it will be send to back-End by calling action Function!-->
+<script type="text/javascript">
+var table;
+var selectedrows =[];
+var salesPerson = '';
+    $(document).ready(function() {
+        stopLoading();
+        table = $('#example').DataTable( {
+        "lengthChange": false,
+        "searching": false,
+        "info": false,
+        "paginate": false,
+        dom: 'Bfrtip',
+        select: true,
+        buttons: [
+        {
+        text: 'Select All',
+        action: function () {
+            table.rows().iterator( 'row', function ( context, index ) {
+                $( this.row( index ).node() ).addClass( 'selected' );
+                if(jQuery.inArray( table.cell(index,0).data(), selectedrows) == -1){
+                    selectedrows.push(table.cell(index,0).data());
+                }
+            } );
+        }
+        },
+        {
+        text: 'UnSelect All',
+        action: function () {
+            table.rows().iterator( 'row', function ( context, index ) {
+                $( this.row( index ).node() ).removeClass( 'selected' );
+                selectedrows.splice(selectedrows.indexOf(table.cell(index,0).data()),0);
+            } );
+            
+        }
+
+        }
+        ],
+        "columnDefs": [
+        {
+            "targets": 0,
+            "visible": false,
+            "orderable": false,
+        },
+        {    "orderable": false,
+             "targets": 1
+        },
+        {    "orderable": false,
+             "targets": 2
+        },
+        {    "orderable": false,
+             "targets": 3
+        }
+        ],                          
+        } );
+        $('#example tbody').on( 'click', 'tr', function () {
+            if ( $(this).hasClass('selected') ) {
+                var index = table.row( this ).index();
+                selectedrows.splice(selectedrows.indexOf(table.cell(index,0).data()),0);
+                $(this).removeClass('selected');
+            }
+            else {
+                var index = table.row( this ).index();
+                if(jQuery.inArray( table.cell(index,1).data(), selectedrows) == -1){
+                    selectedrows.push(table.cell(index,0).data());
+                }
+                $(this).addClass('selected');
+            }
+        table.draw(false);
+        } );
+    } );
+   function selecteduser() {
+   
+       var userlst = '{!userList[0].quoteRecord.APTS_LP_Sales_Person__c}';
+       if((salesPerson == null || salesPerson == '') &&(selectedrows == null || selectedrows == '' )){
+           alert('Please select atleast one user to Send Email');
+       }else{
+           showLoading();
+           paraFunction(JSON.stringify(selectedrows));
+       }
+   }
+   
+    function showLoading() {
+        var span = document.getElementById('myspan');
+        while( span.firstChild ) {
+            span.removeChild( span.firstChild );
+        }
+        span.appendChild( document.createTextNode("Sending Email...") );
+        document.getElementById('LoadingImg').style.display = 'inline';
+        
+    }
+    
+    function stopLoading() {
+        
+        document.getElementById('LoadingImg').style.display = 'none';
+    }
+    function salesperson(sales){
+        salesPerson = document.getElementById(sales).value;
+    }
+</script>  
+  
+<script type="text/javascript">
+        function checkAll(cb, cbid) {
+            var inputElem = document.getElementsByTagName("input");
+            for (var i = 0; i < inputElem.length; i++) {
+                if (inputElem[i].id.indexOf(cbid) != -1) {
+                    inputElem[i].checked = cb.checked;
+                }
+            }
+        }
+</script>
+<style>
+
+.aptPageTitleBarPanel {
+    border: 1px solid #428BCA;
+    background: #428BCA;
+    color:black !important;
+    height: 30px;
+    line-height: 30px;
+    padding: 0;
+    border-radius: 2px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    font-size: 14px;
+}
+.apt-cart-head-label {
+    color: #5487B9 !important;
+    font-weight: bold;
+    padding-left: 6px;
+}
+.pbSubheader{
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+.cartTable {
+    width: 100%;
+    background: #ffffff;
+    background: -moz-linear-gradient(top, #ffffff 0%, #f2f6fa 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#f2f6fa));
+    background: -webkit-linear-gradient(top, #ffffff 0%,#f2f6fa 100%);
+    background: -o-linear-gradient(top, #ffffff 0%,#f2f6fa 100%);
+    background: -ms-linear-gradient(top, #ffffff 0%,#f2f6fa 100%);
+    background: linear-gradient(to bottom, #ffffff 0%,#f2f6fa 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f2f6fa',GradientType=0 );
+    border-bottom: 1px solid #d8d8d8;
+    line-height: 30px;
+    margin-bottom: 15px; //RE
+}
+
+.Custom29Tab .secondaryPalette, .individualPalette .Custom29Block .secondaryPalette {
+    background-color: #5487B9;
+    border-color: #5487B9;
+}
+.Custom29Tab .brdPalette {
+    border-top-color: #5487B9;
+}
+.Custom29Tab .tertiaryPalette, .individualPalette .Custom29Block .tertiaryPalette, .layoutEdit .individualPalette .Custom29Block .tertiaryPalette {
+    background-color: #5487B9;
+    border-color: #5487B9;
+}
+.formfield * {
+  vertical-align: top;
+}
+.btn{
+  margin-left: 15px !important; //RE
+}
+h3{
+  color:black !important; //RE
+  }
+table.dataTable th { 
+border: 1px solid #c1c1c1;  
+}
+</style>
+<div class="loader" id="LoadingImg" >
+<svg class="circular" viewBox="25 25 50 50">
+    <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5px" stroke-miterlimit="1"/>
+</svg>
+<div class="message" id="msg" style="display: block !important;background-color:transparent !important;border:none;margin :-45px -40px; width: 100px; height: 7px"><Span id ="myspan" style="font-size:15px !important;"></Span></div>
+</div>
+    <apex:form >
+    <apex:actionFunction name="paraFunction" action="{!sendMail}" oncomplete="stopLoading()" >      
+        <apex:param id="anode" name="node" value="" />
+    </apex:actionFunction>
+    <apex:pageMessages ></apex:pageMessages>
+ <apex:pageblock title="Quotation Information">
+ <div class="cartTable ">
+    <span class="apt-cart-head-label">Quotation/Agreement ID:</span>
+    <a href="/{!quoteId}">{!quoteName}</a>
+    <br/>
+    </div>
+<apex:pageBlockSection collapsible="False" columns="1" title="Quote/Agreement Team Members" rendered="{!If(defaultuserList != null && defaultuserList.size <= 0,false, true)}">
+<apex:outputPanel id="defaultUser">
+<table id="example" class="cell-border" cellspacing="0" style="width: 100%;border-bottom:1px solid #ccc !important;">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>User</th>
+            <th>User Role</th>
+            <th>Access Level</th>
+        </tr>
+    </thead> 
+    <tbody>
+        <apex:repeat value="{!defaultuserList}" var="u">
+            <tr>
+                <td>{!u.userEmail }</td>
+                <td>{!u.userName}</td>
+                <td>{!u.userRole}</td>
+                <td>{!u.userlevel}</td>                                                
+            </tr>
+        </apex:repeat>
+    </tbody>
+</table>
+</apex:outputPanel>
+</apex:pageBlockSection>
+  <apex:outputPanel id="userHead">
+  <apex:variable value="{!0}" var="rowNum"/>  
+   <apex:pageBlockSection columns="1" title="Please choose the user you want to send your configuration request to:" collapsible="False"> 
+     <apex:pageBlockTable value="{!userList}" var="user" > 
+      <apex:column headerValue="Configuration User">
+            <apex:inputField value="{!user.quoteRecord.APTS_LP_Sales_Person__c}" id="sales" onchange="salesperson('{!$Component.sales}');"/>
+      </apex:column>      
+      <apex:column headerValue="">
+        <apex:commandButton value="Remove User" action="{!removeRowFromUserList}" rendered="{!rowNum >= 0}" rerender="userHead" immediate="true" >
+             <apex:param value="{!rowNum}" name="rowToRemove" assignTo="{!rowToRemove}"/>
+         </apex:commandButton>
+         <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+      </apex:column>
+    </apex:pageBlockTable>
+
+
+   </apex:pageBlockSection>
+   <apex:commandButton value="Add additional User" action="{!addNewRowToUserList}" rerender="userHead" Status="status" immediate="true" disabled="{!If(userList != null && userList.size < 10,false, true)}"/> 
+   
+  </apex:outputPanel> 
+   <apex:pageBlockSection title="Please select the attachments you want to add:" collapsible="false" columns="1">
+    <apex:outputPanel id="myPanel">
+      <apex:pageBlockTable value="{!attachmentList}" var="a">
+          <apex:column headerValue="Select"> 
+              <apex:inputCheckbox value="{!a.selected}"/> 
+            </apex:column> 
+             <apex:column headerValue="Attachment Name" > 
+                 <apex:outputLink value="/{!a.attRecord.Id}" >{!a.attRecord.Name}</apex:outputLink> 
+              </apex:column> 
+           <apex:column headerValue="Attachment Owner" > 
+                <apex:outputField value="{!a.attRecord.owner.name}"/>  
+          </apex:column> 
+         </apex:pageBlockTable> 
+     </apex:outputPanel>
+    <apex:outputPanel id="myButtons">          
+                <apex:commandButton value="<<" action="{!beginning}" disabled="{!DisablePrevious}" rerender="myPanel,myButtons" />
+                <apex:commandButton value="Previous" action="{!previous}" disabled="{!DisablePrevious}" rerender="myPanel,myButtons" />
+                <apex:commandButton value="Next" action="{!next}" disabled="{!DisableNext}" rerender="myPanel,myButtons" />
+                <apex:commandButton value=">>" action="{!last}" disabled="{!DisableNext}"  rerender="myPanel,myButtons" />               
+  
+   </apex:outputPanel>
+   </apex:pageBlockSection>
+   <br/>
+    <p class="formfield">
+      <span class="apt-cart-head-label"> Comments:</span> &nbsp;&nbsp;&nbsp; <apex:inputTextarea value="{!comments}" style="margin: 0px; width: 523px; height: 87px;"/>
+    </p>
+ </apex:pageblock>
+<div align="center">
+    <apex:commandButton value="Send Email" onclick="return selecteduser();" reRender="example"/>
+    <apex:commandButton value="Close" action="{!close}" />
+</div>
+</apex:form>
+</apex:page>
