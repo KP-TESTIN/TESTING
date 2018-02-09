@@ -19,10 +19,6 @@ public without sharing class APTS_ConfiguratorSectionSelection {
      //variable for defect 6103
      public Boolean allTotalNetPricesUpdated {get; set;}
      //variable for CR-8127
-     public Boolean familiasectionUpdated {get; set;}
-     public Boolean showOkButton {get; set;}
-     public List<APTS_Configurator_Section__c> lstupdateConfigSec {get; set;}
-     public static final string PREVIEW = 'Preview';
      public String previewBtn = null;
      private static final String MISC_SECTION = 'Misc. Section';
      
