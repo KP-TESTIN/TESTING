@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <fields>
-        <fullName>Overdue__c</fullName>
+        <fullName>Overdue_c</fullName>
         <externalId>true</externalId>
         <formula>AND (Expected_Award_date__c &lt; TODAY(), NOT(ISPICKVAL(ABB_Sales_Stage__c,&apos;Closed Lost (Cancelled)&apos;)),
 NOT(ISPICKVAL(ABB_Sales_Stage__c,&apos;Closed Lost&apos;)),NOT(ISPICKVAL(ABB_Sales_Stage__c,&apos;Closed Won&apos;)),NOT(ISPICKVAL(ABB_Sales_Stage__c,&apos;Closed Lost Without ABB Bid&apos;)))</formula>
