@@ -430,7 +430,7 @@
 	</target>
 	
 		<target name="retrieveChangeSet">    <mkdir dir="changeSet" />
-      <sf:retrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.serverurl}" retrieveTarget="changeSet"
+      <sf:retrieve username="${sf.username}"  serverurl="${sf.serverurl}" retrieveTarget="changeSet"
       packageNames="${CHANGESET_NAME}" />
 	  </target>
 	<!-- Changes complete-->
