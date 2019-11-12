@@ -16,11 +16,10 @@ global class AccountSegmentationReorgDataFix implements Database.Batchable<sObje
         'FROM Customer_Segmentation__c ' + 
         'WHERE Account__r.Active__c = true ';
         //' and Id = \'a6Q20000000ls3XEAQ\'';
-
     private static final Map<String, DivAndBu> BU_2_NEW_BU_AND_DIV = new Map<String, DivAndBu>{
         'DMPC' => new  DivAndBu('EP', 'EPPE')
     };
-
+;
     private static final String ACCOUNT_SEGMENTATION_SEGMENT_LEVEL_BUSINESS_UNIT = 'Business Unit';
 
     private static final Map<String,String> OLD_DIVISION_2_NEW_DIVISION = new Map<String,String>{
