@@ -54,7 +54,7 @@
   <target name="createDeployPkg" depends="init">
     <groovy>
       <classpath>
-        <dirset dir="./TESTING/groovy/"/>
+        <dirset dir="./groovy/"/>
       </classpath>
       String srcDir = "${properties['env.WORKSPACE']}"
       String distFolder = "${properties['DIST_DIR']}"
