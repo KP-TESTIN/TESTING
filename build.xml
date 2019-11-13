@@ -54,9 +54,9 @@
   <target name="createDeployPkg" depends="init">
     <groovy>
       <classpath>
-        <dirset dir="./groovy/"/>
+        <dirset dir="./TESTING/groovy/"/>
       </classpath>
-      String srcDir = "${properties['srcDir']}"
+      String srcDir = "${properties['env.WORKSPACE']}"
       String distFolder = "${properties['DIST_DIR']}"
       String baseDir = new File(System.getProperty("user.dir"))
 
@@ -169,7 +169,7 @@
 
   <target name="startFullValidationProcess"  >
     <groovy>
-      properties['srcDir'] = "C:/ANT/LEX/TESTING"
+      String srcDir = "${properties['env.WORKSPACE']}"
       properties['DIST_DIR'] = "dist"
       properties['DIST_DESTRUCTIVE'] = "dist_destructive"
 
