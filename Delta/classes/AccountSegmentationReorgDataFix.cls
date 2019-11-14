@@ -1,6 +1,6 @@
 global class AccountSegmentationReorgDataFix implements Database.Batchable<sObject>, Database.Stateful{
     Private class DivAndBu{
-        public String div; 
+        Public String div; 
 
         public String bu;
 
