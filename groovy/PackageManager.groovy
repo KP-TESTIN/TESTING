@@ -76,7 +76,7 @@ class PackageManager {
 
       modifiedFile = modifiedFile.replace('/', "${FILE_SEPARATOR}")
       def source = "${sourceDir}${FILE_SEPARATOR}${modifiedFile}"
-      def target = "${baseDir}${FILE_SEPARATOR}"+modifiedFile.replace("src", destinationDir)
+      def target = "${baseDir}${FILE_SEPARATOR}"+modifiedFile.replace("Delta", destinationDir)
 
       if( new File(source).exists()){
 
@@ -193,7 +193,7 @@ def targetfile = new File(target)
    * Return true if the provided file is on the src folder and false in other way
    */
   boolean isOnSrc ( String fileName){
-    fileName.startsWith("src")
+    fileName.startsWith("Delta")
   }
 
   /**
@@ -237,7 +237,7 @@ def targetfile = new File(target)
           out.writeLine(line)
         }
       }
-      String source = "${sourceDir}/src/${destructiveFile}"
+      String source = "${sourceDir}/Delta/${destructiveFile}"
       String target = "${destructivePath}${destructiveFile}"
       println destructiveFile
       println target
