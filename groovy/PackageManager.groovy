@@ -34,7 +34,7 @@ class PackageManager {
    */
   static def toBranch(repoPath,  branchName){
 
-    def command = "git checkout ${branchName}"
+    def command = "C:/Program Files/Git/bin/git checkout ${branchName}"
     def repo = new File(repoPath)
     def proc = command.execute(null, repo)
     proc.waitFor()
@@ -138,7 +138,7 @@ def targetfile = new File(target)
    * Get a list of list of modified files since an specific version
    */
   String[] getModifiedFiles(String version){
-    def command = "git diff --oneline --name-status ${version} HEAD"
+    def command = "C:/Program Files/Git/bin/git diff --oneline --name-status ${version} HEAD"
     println "before run command"
     def output = runCommand(command)
 
