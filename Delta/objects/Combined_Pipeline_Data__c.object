@@ -30,4 +30,14 @@ NOT(ISPICKVAL(ABB_Sales_Stage__c,&apos;Closed Lost&apos;)),NOT(ISPICKVAL(ABB_Sal
         <trackTrending>true</trackTrending>
         <type>Checkbox</type>
     </fields>
+	<fields>
+        <fullName>HPLowerOverdue_c</fullName>
+        <externalId>true</externalId>
+        <formula>AND (Expected_Award_date__c &lt; TODAY(), NOT(ISPICKVAL(ABB_Sales_Stage__c,&apos;Closed Lost (Cancelled)&apos;)),
+NOT(ISPICKVAL(ABB_Sales_Stage__c,&apos;Closed Lost&apos;)),NOT(ISPICKVAL(ABB_Sales_Stage__c,&apos;Closed Won&apos;)),NOT(ISPICKVAL(ABB_Sales_Stage__c,&apos;Closed Lost Without ABB Bid&apos;)))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Overdue</label>
+        <trackTrending>true</trackTrending>
+        <type>Checkbox</type>
+    </fields>
 </CustomObject>
