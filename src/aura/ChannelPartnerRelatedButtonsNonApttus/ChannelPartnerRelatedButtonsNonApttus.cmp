@@ -1,0 +1,188 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" controller="ChannelPartnerRelatedButtonsNonApttusCon" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.initiate}"/>
+    
+    <aura:attribute name="sObjectType" type="String"/>
+    <aura:attribute name="userInfo" type="User"/>
+    <aura:attribute name="opportunityInfo" type="Opportunity"/>
+    <aura:attribute name="marketScopeInfo" type="Channel_Market_Coverage__c"/>
+    <aura:attribute name="businessPlanInfo" type="Joint_Business_Plan__c"/>
+    <aura:attribute name="businessReviewInfo" type="Channel_Business_Review__c"/>
+    <aura:attribute name="accountPlanInfo" type="SObject"/>
+    <aura:attribute name="businessPlanRecInfo" type="Map" /> 
+    <aura:attribute name="visitReportInfo" type="Visit_Report__c"/>
+    <aura:attribute name="sitePrefix" type="String"/>
+    <aura:attribute name="leadRecTypeName" type="String"/>
+
+    <aura:attribute name="prepopulateData" type="ChannelPartnerRelatedButtonsNonApttusCon.wrapperClass"/>
+    <aura:attribute name="prepopulateOppfromLead" type="ChannelPartnerRelatedButtonsNonApttusCon.wrapperClassLeadtoOpp"/>
+    <aura:attribute name="InitialRecordTypeId" type="Id" />
+    <aura:attribute name="IsUserHasOppFullAccess" type="Boolean" default="false"/>
+    <aura:attribute name="prepopulateDataLoAPoA" type="ChannelPartnerRelatedButtonsNonApttusCon.wrapperClassLoAPoA"/>
+    <aura:attribute name="LoARecordTypeId" type="Id" />
+    <aura:attribute name="PoARecordTypeId" type="Id" />
+    <aura:attribute name="isUserAllowedforLoAPoA" type="Boolean" />
+    <aura:attribute name="isUserAllowedforEPMSPA" type="Boolean"/>
+    <aura:attribute name="isVisible" type="Boolean"/>
+    <aura:attribute name="isLeadConverted" type="Boolean" default="false"/>
+    <aura:attribute name="isUserHasCQPQuoteAccess" type="Boolean" default="false"/>
+    <aura:attribute name="isVisibleAccess" type="Boolean"/>
+    <aura:attribute name="isLeadOwnedByUser" type="Boolean" default="false"/>
+    <aura:attribute name="leadRecTypeCheck" type="Boolean" default="false"/>
+	<aura:attribute name="budgetInfo" type="sObject"/>
+    <div class="slds-float_right">
+        
+        <!-- Account -->
+        <aura:if isTrue="{!(v.sObjectType == 'account')}">
+            <lightning:button variant="neutral" label="New Opportunity" onclick="{!c.createOpportunity}"/>
+            <lightning:button variant="neutral" label="New End User Project" onclick="{!c.newEndUserProject}"/>
+            <lightning:button variant="neutral" label="New Visit Report" onclick="{!c.newVisitReportfromAccount}" />
+        </aura:if>
+        
+        <!-- Account Plan-->
+        <aura:if isTrue="{!(v.sObjectType == 'account_plan__c')}">
+            <!-- User RM Division -->
+            <lightning:button variant="neutral" label="Add Account Plan Team Member" onclick="{!c.addAccountPlanMember}" />
+            <lightning:button variant="neutral" label="New Supporting Opportunity" onclick="{!c.newSupportingOpportunity}" />
+        	<lightning:button variant="neutral" label="New Visit Report" onclick="{!c.newVisitReportfromAccountPlan}" />
+        </aura:if>  
+        <aura:if isTrue="{!or(v.userInfo.Profile.Name == $Label.c.SYS_ABBExtChannelPartnerCommunityUser,
+                         v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Rep_Community_User,
+                         v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Agent_Community_User)}">
+            <!-- Opportunity -->
+            <aura:if isTrue="{!(v.sObjectType == 'opportunity')}">
+                <lightning:button variant="neutral" label="Add Products" onclick="{!c.addProducts}"/>
+                <lightning:button variant="neutral" label="Add from Favorites" onclick="{!c.addFromFavorites}"/>
+                <c:MassEditDeleteOpportunities />
+                <lightning:button variant="neutral" label="Clone" onclick="{!c.oppClone}"/>
+                <lightning:button variant="neutral" label="New Visit Report" onclick="{!c.newVisitReportfromOpportunity}" />
+                <!-- User RM Division -->
+                <aura:if isTrue="{!v.userInfo.Division_DIV__c == 'RM'}">    
+                    <!--<aura:if isTrue="{!v.isUserHasCQPQuoteAccess}">
+                        <lightning:button variant="neutral" label="New Quote" onclick="{!c.newQuoteOpportunity}" />
+                    </aura:if>-->
+                    <aura:if isTrue="{!v.isUserAllowedforLoAPoA}">
+                        <lightning:button variant="neutral" label="New LoA" onclick="{!c.createLoA}"/>
+                        <lightning:button variant="neutral" label="New PoA" onclick="{!c.createPoA}"/>
+                    </aura:if>
+                </aura:if>
+            </aura:if>
+            
+            <!-- Channel Partner Market Scope -->
+            <aura:if isTrue="{!(v.sObjectType == 'channel_market_coverage__c')}">
+                <aura:if isTrue="{!or(v.userInfo.Profile.Name == $Label.c.SYS_ABBExtChannelPartnerCommunityUser,
+                                     v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Rep_Community_User,
+                                     v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Agent_Community_User)}">
+                    <lightning:button variant="neutral" label="New Channel Partner Business Plan" onclick="{!c.newBPPlan}" />
+                    <!--<lightning:button variant="neutral" label="Add Products" onclick="{!c.addChannelPartnerProducts}"/>-->
+                    <lightning:button variant="neutral" label="Add from Favorites" onclick="{!c.addFromFavorites}"/>    
+                </aura:if>
+            </aura:if>
+        </aura:if>
+        <!-- Lead -->
+        <aura:if isTrue="{!(v.sObjectType == 'lead')}">
+            <aura:if isTrue="{!v.leadRecTypeName != 'External Prospect Lead'}">                             
+            	<lightning:button variant="neutral" label="New Visit Report" onclick="{!c.newVisitReportfromLead}" />
+            </aura:if>
+            <aura:if isTrue="{!not(v.isLeadConverted) &amp;&amp;  v.isLeadOwnedByUser &amp;&amp;  v.leadRecTypeCheck}">
+                <lightning:button variant="neutral" label="Add Lead Products" onclick="{!c.addLeadProducts}"/>
+            </aura:if>
+            <!-- User RM Division -->
+            <aura:if isTrue="{!not(v.isLeadOwnedByUser)}">
+                <lightning:button variant="neutral" label="New Opportunity Lead" onclick="{!c.createOppfromLead}"/>
+                <aura:if isTrue="{!v.isVisible}">
+                    <lightning:button variant="neutral" label="Create New Account and Contact" onclick="{!c.createNewAccountContact}"/>
+                </aura:if>
+            </aura:if>
+                <aura:if isTrue="{!v.isLeadOwnedByUser}">
+                    <lightning:button variant="neutral" label="Convert" onclick="{!c.leadConvertion}"/> 
+                    <lightning:button variant="neutral" label="Add from Favorites" onclick="{!c.addFromFavorites}"/>   
+                </aura:if>
+                <aura:if isTrue="{!v.isVisibleAccess}">
+                    <lightning:button variant="neutral" label="Request access to Account" onclick="{!c.requestAccessToAccount}"/>
+                </aura:if>
+        </aura:if>
+        
+        <!-- Business Plan -->
+        <aura:if isTrue="{!(v.sObjectType == 'joint_business_plan__c')}"> 
+            <lightning:button variant="neutral" label="New Visit Report" onclick="{!c.newVisitReportfromBusinessPlan}" />
+            <aura:if isTrue="{!or(v.userInfo.Profile.Name == $Label.c.SYS_ABBExtChannelPartnerCommunityUser,
+                             v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Rep_Community_User)}">						
+                <aura:if isTrue="{!not(v.businessPlanInfo.Status__c == 'Closed')}" >
+                	<lightning:button variant="neutral" label="Add Contacts From Account" onclick="{!c.addContacts}"/> 
+                 	<lightning:button variant="neutral" label="Copy Industry from Market scope" onclick="{!c.newContactRoles}"/>
+            	</aura:if>
+                <lightning:button variant="neutral" label="New Sales Targets and Results" onclick="{!c.addSalesTargets}"/>
+                <lightning:button variant="neutral" label="Add from Favorites" onclick="{!c.addFromFavorites}"/>
+                <aura:if isTrue="{!not(v.businessPlanInfo.Status__c == 'Closed')}" >
+                    <lightning:button variant="neutral" label="Mass Edit Sales" onclick="{!c.massEditSales}"/>
+            	</aura:if>
+                <lightning:button variant="neutral" label="Transfer to next Year" onclick="{!c.transferToNextYear}" />
+            </aura:if>            	
+        </aura:if> 
+        
+        <!-- Business Plan Review Edit Page button -->
+        <aura:if isTrue="{!(v.sObjectType == 'channel_business_review__c')}"> 
+            <lightning:button variant="neutral" label="New Visit Report" onclick="{!c.newVisitReportfromBusinessReview}" />
+            <aura:if isTrue="{!or(v.userInfo.Profile.Name == $Label.c.SYS_ABBExtChannelPartnerCommunityUser,
+                             v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Rep_Community_User)}">	
+                <aura:if isTrue="{!not(or(v.businessReviewInfo.RecordType.Name == $Label.c.Mid_Period_Channel_Business_Review_Name,
+                                 v.businessReviewInfo.RecordType.Name == $Label.c.STS_Mid_Period_Channel_Business_Review_Name))}">
+                    <lightning:button variant="neutral" label="Edit" onclick="{!c.editBusinessReviewRecord}" />
+                </aura:if>
+            </aura:if>            	
+        </aura:if>
+        
+        <!-- Manage Visit Attendee -->
+        <aura:if isTrue="{!(v.sObjectType == 'visit_report__c')}"> 
+            <aura:if isTrue="{!or(v.userInfo.Profile.Name == $Label.c.SYS_ABBExtChannelPartnerCommunityUser,
+                             v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Rep_Community_User)}">	
+                                    <lightning:button variant="neutral" label="Manage Visit Attendees" onclick="{!c.manageAttendee}" />
+             </aura:if>
+        </aura:if>
+        
+        <!-- Manage Visit Report Team Member -->
+        <aura:if isTrue="{!(v.sObjectType == 'visit_report__c')}"> 
+            <aura:if isTrue="{!or(v.userInfo.Profile.Name == $Label.c.SYS_ABBExtChannelPartnerCommunityUser,
+                             v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Rep_Community_User)}">	
+                                    <lightning:button variant="neutral" label="Manage Visit Report Team" onclick="{!c.manageVRTeam}" />
+             </aura:if>
+        </aura:if>
+		
+       <!-- Manage Opportunities -->
+        <aura:if isTrue="{!(v.sObjectType == 'visit_report__c')}"> 
+            <aura:if isTrue="{!or(v.userInfo.Profile.Name == $Label.c.SYS_ABBExtChannelPartnerCommunityUser,
+                             v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Rep_Community_User)}">	
+                                    <lightning:button variant="neutral" label="Manage Opportunities" onclick="{!c.manageOpps}" />
+             </aura:if>
+        </aura:if> 
+        
+        <!-- Manage Leads -->
+        <aura:if isTrue="{!(v.sObjectType == 'visit_report__c')}"> 
+            <aura:if isTrue="{!or(v.userInfo.Profile.Name == $Label.c.SYS_ABBExtChannelPartnerCommunityUser,
+                             v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Rep_Community_User)}">	
+                                    <lightning:button variant="neutral" label="Manage leads" onclick="{!c.manageLeads}" />
+             </aura:if>
+        </aura:if> 
+        
+        <!-- Manage Account Plans -->
+        <aura:if isTrue="{!(v.sObjectType == 'visit_report__c')}"> 
+            <aura:if isTrue="{!(v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Rep_Community_User)}">	
+             	<lightning:button variant="neutral" label="Manage Account Plans" onclick="{!c.manageAccPlans}" />
+             </aura:if>
+        </aura:if> 
+        
+        <!-- Manage Account Plans -->
+        <aura:if isTrue="{!(v.sObjectType == 'capture_team__c')}"> 	
+             <lightning:button variant="neutral" label="Add Team" onclick="{!c.addTeam}" />
+            <lightning:button variant="neutral" label="Add New Competitor" onclick="{!c.addCompetitor}" />
+            <lightning:button variant="neutral" label="Add New Opportunity" onclick="{!c.newOppty}" />
+            <lightning:button variant="neutral" label="Remove Opportunity" onclick="{!c.removeOppty}" />
+        </aura:if> 
+    </div> 
+    
+    <div style="clear: both;"></div>
+    <div class="Spinner">
+        <lightning:spinner aura:id="exSpinner" class="slds-hide" alternativeText="Loading..."/>
+    </div>
+</aura:component>

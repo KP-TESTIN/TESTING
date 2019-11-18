@@ -1,0 +1,73 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" controller="ChannelPartnerRelatedButtonsApttusCon" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.initiate}"/>
+    
+    <aura:attribute name="sObjectType" type="String"/>
+    <aura:attribute name="userInfo" type="User"/>
+    <aura:attribute name="opportunityInfo" type="Opportunity"/>
+    <aura:attribute name="quotationInfo" type="Apttus_Proposal__Proposal__c"/>
+    <aura:attribute name="isUserAllowedforEPMSPA" type="Boolean"/>
+    <aura:attribute name="isUserHasCQPQuoteAccess" type="Boolean" default="false"/>
+	<aura:attribute name="budgetInfo" type="sObject"/>
+    <div class="slds-float_right">
+        
+        <!-- Account -->
+        <aura:if isTrue="{!(v.sObjectType == 'account')}">
+            <!-- User RM Division -->
+            <aura:if isTrue="{!v.userInfo.Division_DIV__c == 'RM'}">
+                <aura:if isTrue="{!or(v.userInfo.Profile.Name == $Label.c.SYS_ABBExtChannelPartnerCommunityUser,
+                                 v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Rep_Community_User,
+                                 v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Agent_Community_User)}">							
+                    <lightning:button variant="neutral" label="New Quote" onclick="{!c.newQuoteAccount}" />
+                </aura:if>
+            </aura:if>
+            
+           <aura:if isTrue="{!and(v.userInfo.Division_DIV__c == 'EP',v.isUserAllowedforEPMSPA)}">
+                <lightning:button variant="neutral" label="New MSPA" onclick="{!c.createMSPA}" />
+            </aura:if>
+        </aura:if>
+        
+        <aura:if isTrue="{!or(v.userInfo.Profile.Name == $Label.c.SYS_ABBExtChannelPartnerCommunityUser,
+                         v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Rep_Community_User,
+                         v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Agent_Community_User)}">
+            <!-- Opportunity -->
+            <aura:if isTrue="{!(v.sObjectType == 'opportunity')}">
+                <!--<lightning:button variant="neutral" label="Add Products" onclick="{!c.addProducts}"/> -->
+                <!-- User RM Division -->
+                <aura:if isTrue="{!v.userInfo.Division_DIV__c == 'RM'}">    
+                    <aura:if isTrue="{!v.isUserHasCQPQuoteAccess}">
+                        <lightning:button variant="neutral" label="New Quote" onclick="{!c.newQuoteOpportunity}" />
+                    </aura:if>
+                </aura:if>
+                <aura:if isTrue="{!and(v.userInfo.Division_DIV__c == 'EP',v.isUserAllowedforEPMSPA)}">
+                    <lightning:button variant="neutral" label="New MSPA" onclick="{!c.createMSPA}" />
+                </aura:if>
+            </aura:if>
+            
+            <!-- Channel Partner Market Scope -->
+            <aura:if isTrue="{!(v.sObjectType == 'channel_market_coverage__c')}">
+                <aura:if isTrue="{!or(v.userInfo.Profile.Name == $Label.c.SYS_ABBExtChannelPartnerCommunityUser,
+                                     v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Rep_Community_User,
+                                     v.userInfo.Profile.Name == $Label.c.SYS_ABB_Ext_Agent_Community_User)}">
+                    <lightning:button variant="neutral" label="Add Products" onclick="{!c.addChannelPartnerProducts}"/>
+            	</aura:if>
+            </aura:if>
+            <!-- Quotation -->
+            <aura:if isTrue="{!(v.sObjectType == 'apttus_proposal__proposal__c')}">
+                <!-- User RM Division -->
+                <aura:if isTrue="{!v.userInfo.Division_DIV__c == 'RM'}">
+                    <lightning:button variant="neutral" label="Edit" onclick="{!c.editQuote}" />
+                </aura:if>
+            </aura:if> 
+        </aura:if>
+        
+        <aura:if isTrue="{!(v.sObjectType == 'budget__c')}"> 
+            <lightning:button variant="neutral" label="Add or Edit Sales Products" onclick="{!c.addSalesProducts}"/>
+        </aura:if>
+    </div>    
+    
+    <div style="clear: both;"></div>
+    <div class="Spinner">
+        <lightning:spinner aura:id="exSpinner" class="slds-hide" alternativeText="Loading..."/>
+    </div>
+</aura:component>
